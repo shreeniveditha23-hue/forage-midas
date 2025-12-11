@@ -20,6 +20,9 @@ public class KafkaConsumerConfig {
     public ConsumerFactory<String, Transaction> consumerFactory() {
         Map<String, Object> props = new HashMap<>();
 
+        // REQUIRED: Fixes "No group.id found"
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "midas-core-group");
+
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
@@ -27,7 +30,11 @@ public class KafkaConsumerConfig {
         JsonDeserializer<Transaction> deserializer = new JsonDeserializer<>(Transaction.class);
         deserializer.addTrustedPackages("*");
 
-        return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), deserializer);
+        return new DefaultKafkaConsumerFactory<>(
+                props,
+                new StringDeserializer(),
+                deserializer
+        );
     }
 
     @Bean
