@@ -11,15 +11,15 @@ public class TransactionKafkaListener {
 
     private static final Logger log = LoggerFactory.getLogger(TransactionKafkaListener.class);
 
-    private final ReceivedTransactionStore store;
+    private final TransactionService transactionService;
 
-    public TransactionKafkaListener(ReceivedTransactionStore store) {
-        this.store = store;
+    public TransactionKafkaListener(TransactionService transactionService) {
+        this.transactionService = transactionService;
     }
 
     @KafkaListener(topics = "${general.kafka-topic}", containerFactory = "kafkaListenerContainerFactory")
     public void listen(Transaction transaction) {
         log.info("Received transaction: {}", transaction);
-        store.add(transaction);
+        transactionService.process(transaction);
     }
 }
